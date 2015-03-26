@@ -80,7 +80,7 @@ class TraitError(Exception):
 #-----------------------------------------------------------------------------
 
 
-def class_of ( object ):
+def class_of( object ):
     """ Returns a string containing the class name of an object with the
     correct indefinite article ('a' or 'an') preceding it (e.g., 'an Image',
     'a PlotValue').
@@ -91,7 +91,7 @@ def class_of ( object ):
     return add_article( object.__class__.__name__ )
 
 
-def add_article ( name ):
+def add_article( name ):
     """ Returns a string containing the correct indefinite article ('a' or 'an')
     prefixed to the specified string.
     """
@@ -207,8 +207,7 @@ def trait_init(type, entry, args=None, kw=None, **metadata):
     Parameters
     ----------
     type : TraitType
-        A type inheriting from TraitType which will be assigned
-        to klass under the specified name.
+        A type inheriting from TraitType.
     entry : allowable for type
         Specify the input for type. This is the default value if
         type is not a ClassBasedTraitType, otherwise this should
@@ -604,10 +603,10 @@ class HasTraits(py3compat.with_metaclass(MetaHasTraits, object)):
             inst = new_meth(cls)
         else:
             inst = new_meth(cls, **kw)
+        inst._dynamic_traits = {}
         inst._trait_values = {}
         inst._trait_notifiers = {}
         inst._trait_dyn_inits = {}
-        inst._dynamic_traits = {}
         # Here we tell all the TraitType instances to set their default
         # values on the instance.
         for key in dir(cls):
@@ -637,7 +636,8 @@ class HasTraits(py3compat.with_metaclass(MetaHasTraits, object)):
             if name in dynamics:
                 trait = dynamics[name]
                 return trait.__get__(self)
-        return super(HasTraits,self).__getattr__(name)
+        klass = self.__class__.__name__
+        raise AttributeError("'{0}' object has no attribute '{1}'".format(klass,name))
 
     def __setattr__(self, name, value):
         if hasattr(self, '_dynamic_traits'):
