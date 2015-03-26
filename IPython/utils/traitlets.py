@@ -219,10 +219,8 @@ def trait_init(type, entry, args=None, kw=None, **metadata):
     **metadata : kwargs
         The metadata which will be fed into type.
     """
-    # issubclass does not always work
-    # here so this was my solution
-    if TraitType in type.mro():
-        if ClassBasedTraitType in type.mro():
+    if issubclass(type,TraitType):
+        if issubclass(type,ClassBasedTraitType):
             # type inherits from ClassBasedTraitType
             if args is None:
                 args=()
@@ -232,8 +230,7 @@ def trait_init(type, entry, args=None, kw=None, **metadata):
         else:
             # type is not class based
             instc = type(entry,**metadata)
-        dv = instc._validate(instc,entry)
-        instc.default_value = dv
+        instc.default_value = entry
         return instc
     else:
         raise TraitError('{0} must inherit from TraitType'.format(type))
